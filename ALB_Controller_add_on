@@ -1,0 +1,45 @@
+1. Setup Application Load Balancer:
+
+- Download the IAM Policy and Create it using the downloaded JSON code:
+
+$ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+
+$ aws iam create-policy \
+    --policy-name AWSLoadBalancerControllerIAMPolicy \
+    --policy-document file://iam_policy.json
+
+2. Create an IAM role for serviceaccount:
+
+$ eksctl create iamserviceaccount \
+  --cluster= game-cluster \
+  --namespace=game-2048 \
+  --name=aws-load-balancer-controller \
+  --role-name AmazonEKSLoadBalancerControllerRole \
+  --attach-policy-arn=arn:aws:iam::<your-aws-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+
+3. Deploy the ALB Controller:
+
+- Add helm repo and update it:
+
+$ helm repo add eks https://aws.github.io/eks-charts
+
+$ helm repo update eks
+
+- Install the ALB:
+
+$ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \            
+  -n kube-system \
+  --set clusterName=game-cluster \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller \
+  --set region=ap-south-1 \
+  --set vpcId=<your-vpc-id>
+
+
+4. Finally, Verify the Deployment are running using the below command:
+
+$ kubectl get deployment -n kube-system aws-load-balancer-controller
+
+
+Now I can use the External IP to access the application through the Browser.

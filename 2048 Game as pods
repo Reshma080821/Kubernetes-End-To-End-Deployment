@@ -1,0 +1,11 @@
+1. Create a Fargate profile first after created a EkS Cluster in AWS.
+
+$ eksctl create fargateprofile \
+    --cluster game-cluster \
+    --region ap-south-1 \
+    --name alb-game-app \
+    --namespace game-2048 
+
+2. Deploy the Deployment, Service and Ingress by running the below command:
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/examples/2048/2048_full.yaml

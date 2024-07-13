@@ -1,0 +1,3 @@
+After deployment run the below command for IAM OpenID Connection:
+
+$ eksctl utils associate-iam-oidc-provider --cluster game-cluster --approve
